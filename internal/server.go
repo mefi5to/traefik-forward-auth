@@ -124,6 +124,13 @@ func (s *Server) AuthCallbackHandler() http.HandlerFunc {
 			return
 		}
 
+		// Check for errors in response
+		if len(r.URL.Query().Get("error")) != 0 {
+			logger.Warn("Error: %v, %v", r.URL.Query().Get("error"), r.URL.Query().Get("error_description"))
+			http.Error(w, "Not authorized", 401)
+			return
+		}
+
 		// Validate state
 		valid, providerName, redirect, err := ValidateCSRFCookie(r, c)
 		if !valid {
@@ -171,7 +178,7 @@ func (s *Server) AuthCallbackHandler() http.HandlerFunc {
 
 func (s *Server) authRedirect(logger *logrus.Entry, w http.ResponseWriter, r *http.Request, p provider.Provider) {
 	// Error indicates no cookie, generate nonce
-	err, nonce := Nonce()
+	nonce, err := Nonce()
 	if err != nil {
 		logger.Errorf("Error generating nonce, %v", err)
 		http.Error(w, "Service unavailable", 503)

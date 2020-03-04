@@ -87,8 +87,16 @@ func (g *Google) ExchangeCode(redirectURI, code string) (string, error) {
 
 	var token token
 	defer res.Body.Close()
-	err = json.NewDecoder(res.Body).Decode(&token)
 
+	if res.StatusCode != http.StatusOK {
+		return "", errors.New(http.StatusText(res.StatusCode))
+	}
+	if err := json.NewDecoder(res.Body).Decode(&token); err != nil {
+		return "", err
+	}
+	if token.Token == "" {
+		return "", errors.New("token not found in response")
+	}
 	return token.Token, err
 }
 
@@ -109,7 +117,20 @@ func (g *Google) GetUser(token string) (User, error) {
 	}
 
 	defer res.Body.Close()
-	err = json.NewDecoder(res.Body).Decode(&user)
+	if res.StatusCode != http.StatusOK {
+		return user, errors.New(http.StatusText(res.StatusCode))
+	}
+
+	var userJSON struct {
+		Email *string `json:"email"`
+	}
+	if err := json.NewDecoder(res.Body).Decode(&userJSON); err != nil {
+		return user, err
+	}
+	if userJSON.Email == nil {
+		return user, errors.New("email not found in response")
+	}
+	user.Email = *userJSON.Email
 
 	return user, err
 }

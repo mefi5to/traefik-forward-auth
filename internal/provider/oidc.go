@@ -100,9 +100,14 @@ func (o *OIDC) GetUser(token string) (User, error) {
 		return user, err
 	}
 
+	var claimsJSON struct {
+		Email *string `json:"email"`
+	}
+	if claimsJSON.Email == nil {
+		return user, errors.New("email not found in response")
+	}
 	user.ID = claims.ID
-	user.Email = claims.Email
+	user.Email = *claimsJSON.Email
 	user.Verified = claims.Verified
-
-	return user, nil
+	return user, err
 }

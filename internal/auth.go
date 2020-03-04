@@ -201,15 +201,11 @@ func MakeState(r *http.Request, p provider.Provider, nonce string) string {
 	return fmt.Sprintf("%s:%s:%s", nonce, p.Name(), returnUrl(r))
 }
 
-func Nonce() (error, string) {
+func Nonce() (string, error) {
 	// Make nonce
 	nonce := make([]byte, 16)
 	_, err := rand.Read(nonce)
-	if err != nil {
-		return err, ""
-	}
-
-	return nil, fmt.Sprintf("%x", nonce)
+	return fmt.Sprintf("%x", nonce), err
 }
 
 // Cookie domain
