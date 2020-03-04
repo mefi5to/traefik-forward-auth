@@ -74,7 +74,7 @@ func TestOIDCExchangeCode(t *testing.T) {
 	defer server.Close()
 
 	token, err := provider.ExchangeCode("http://example.com/_oauth", "code")
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal("id_123456789", token)
 }
 
@@ -96,7 +96,7 @@ func TestOIDCGetUser(t *testing.T) {
 
 	// Get user
 	user, err := provider.GetUser(token)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal("1", user.ID)
 	assert.Equal("example@example.com", user.Email)
 	assert.True(user.Verified)

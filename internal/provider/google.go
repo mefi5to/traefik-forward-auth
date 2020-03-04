@@ -122,7 +122,10 @@ func (g *Google) GetUser(token string) (User, error) {
 	}
 
 	var userJSON struct {
-		Email *string `json:"email"`
+		ID       *string `json:"id"`
+		Email    *string `json:"email"`
+		Verified bool    `json:"verified_email"`
+		Hd       *string `json:"hd"`
 	}
 	if err := json.NewDecoder(res.Body).Decode(&userJSON); err != nil {
 		return user, err
@@ -130,7 +133,10 @@ func (g *Google) GetUser(token string) (User, error) {
 	if userJSON.Email == nil {
 		return user, errors.New("email not found in response")
 	}
+	user.ID = *userJSON.ID
 	user.Email = *userJSON.Email
+	user.Verified = userJSON.Verified
+	user.Hd = *userJSON.Hd
 
 	return user, err
 }
