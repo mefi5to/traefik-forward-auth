@@ -90,8 +90,7 @@ func TestOIDCGetUser(t *testing.T) {
 		"exp":`+strconv.FormatInt(time.Now().Add(time.Hour).Unix(), 10)+`,
 		"aud": "idtest",
 		"sub": "1",
-		"email": "example@example.com",
-		"email_verified": true
+		"email": "example@example.com"
 	}`))
 
 	// Get user
@@ -99,7 +98,6 @@ func TestOIDCGetUser(t *testing.T) {
 	assert.NoError(err)
 	assert.Equal("1", user.ID)
 	assert.Equal("example@example.com", user.Email)
-	assert.True(user.Verified)
 }
 
 // Utils
